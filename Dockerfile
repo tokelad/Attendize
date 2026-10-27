@@ -2,8 +2,15 @@
 
 # Base image with nginx, php-fpm and composer built on debian
 FROM wyveo/nginx-php-fpm:php74 as base
-RUN apt-get update && apt-get install -y wait-for-it libxrender1
 
+RUN rm -f /etc/apt/sources.list.d/*.list \
+ && echo "deb http://archive.debian.org/debian buster main" > /etc/apt/sources.list \
+ && echo "deb http://archive.debian.org/debian-security buster/updates main" >> /etc/apt/sources.list \
+ && apt-get -o Acquire::Check-Valid-Until=false update \
+ && apt-get install -y wait-for-it libxrender1 \
+ && rm -rf /var/lib/apt/lists/*
+
+ 
 # Set up code
 WORKDIR /usr/share/nginx/html
 COPY . .
